@@ -103,6 +103,8 @@ if len(ocorrencias) == 0:
 else:
     print(f'O padrão foi encontrado no texto nas posições: {ocorrencias}')
 
+print('Alterado')
+
 
 
 
