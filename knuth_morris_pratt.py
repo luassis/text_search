@@ -19,12 +19,6 @@ s_padrao = input()
 print('Informe o texto: ')
 s_texto = input()
 
-# Indica a linha que foi localizado o padrão no texto
-linha = 1
-
-# Indica se houve localização do padrão no texto
-localizacao = -1
-
 
 # Retorna a matriz de prefixos com os valores para cada caractere do padrão
 def calcula_prefixo(padrao):
