@@ -12,6 +12,7 @@ print('Informe o segundo texto: ')
 string2 = input()
 
 
+# Calcula a distância de Leventheins comparando caracteres entre palavras
 def levenshtein_caractere(s1, s2):
     m = len(s1) + 1
     n = len(s2) + 1
@@ -44,6 +45,7 @@ def levenshtein_caractere(s1, s2):
     return distancia
 
 
+# Calcula a distância de Leventheins comparando palavras entre frases
 def levenshtein_palavra(s1, s2):
     l1 = s1.split(' ')
     l2 = s2.split(' ')
@@ -82,6 +84,7 @@ def levenshtein_palavra(s1, s2):
     return distancia, m-1, n-1
 
 
+# Remove acentos do texto
 def remover_acentos(texto):
     texto = texto.replace('á', 'a')
     texto = texto.replace('à', 'a')
@@ -93,9 +96,11 @@ def remover_acentos(texto):
     texto = texto.replace('ô', 'o')
     texto = texto.replace('õ', 'o')
     texto = texto.replace('ú', 'u')
+    texto = texto.replace('ü', 'u')
     return texto
 
 
+# Remove caracteres especiais do texto
 def remover_caracteres_especiais(texto):
     texto = texto.replace('-', '')
     texto = texto.replace('ª', '')
@@ -115,6 +120,7 @@ def remover_caracteres_especiais(texto):
     return texto
 
 
+# Remove sinais de pontuação e substitui ? e ! por .
 def remover_sinais_pontuacao(texto):
     texto = texto.replace(',', '')
     texto = texto.replace(';', '')
@@ -124,6 +130,7 @@ def remover_sinais_pontuacao(texto):
     return texto
 
 
+# Remove palavras simples: artigos, preposições, etc
 def remover_palavras_simples(texto):
     texto = texto.replace(' a ', ' ')
     texto = texto.replace(' e ', ' ')
@@ -146,6 +153,7 @@ def remover_palavras_simples(texto):
     return texto
 
 
+# Simplifica o texto de entrada para tornar a comparação entre as frases mais eficiente
 def limpar_texto(texto):
     texto = texto.lower()
     texto = remover_acentos(texto)
@@ -155,57 +163,89 @@ def limpar_texto(texto):
     return texto
 
 
+# Método principal que compara as frases entre dois textos e retorna o percentual de similaridade entre eles
 def compara_textos(texto1, texto2):
+    # Simplificação dos textos de entrada
     texto1 = limpar_texto(texto1)
     texto2 = limpar_texto(texto2)
 
+    # Exibe o número de caracteres de cada texto após a simplificação
     print('Tamanho do texto1: ', len(texto1))
     print('Tamanho do texto2: ', len(texto2))
     print('')
 
+    # Separa os dois textos em listas com frases. Os sinais de ? e ! foram convertidos em .
     lista1 = texto1.split('. ')
     lista2 = texto2.split('. ')
 
+    # Exibe a quantidade de frases de cada texto
     print('Quantidade de frases do texto1: ', len(lista1))
     print('Quantidade de frases do texto2: ', len(lista2))
     print('')
 
+    # Esta lista irá a armazenar a quantidade de palavras e o percentual de similaridade de cada frase do texto 1
     lista_similaridade = []
 
+    # Loop que fará a comparação de cada frase do texto1
     for i in range(0, len(lista1)):
         d_max = 1000
         posicao_j = 0
         qt_palavras1 = 0
         qt_palavras2 = 0
+
+        # Exibe cada frase do texto1 antes de compará-la às frases do texto2
         print(lista1[i])
+
+        # Loop que fará a comparação com cada frase do texto2
         for j in range(0, len(lista2)):
-            # print(lista2[j])
+
+            # Para cada frase do texto2, calcula-se a distância de Levenshtein
             distancia, m, n = levenshtein_palavra(lista1[i], lista2[j])
+
+            # Se a distância de Levenshtein encontrada for menor que a distância máxima:
+            # A frase do texto2 corrente possui uma similaridade melhor com a frase do texto1
+            # Nesta situação, devemos guardar os valores encontrados
             if distancia < d_max:
                 d_max = distancia
                 posicao_j = j
                 qt_palavras1 = m
                 qt_palavras2 = n
+
+        # Ao percorrer todas as frases do texto2, podemos identificar qual delas possui maior similaridade com o texto1
+        # Calcula-se o percentual de similaridade entre as duas frases
         percent_distancia = (d_max / qt_palavras1) * 100
         percent_similaridade = 100 - percent_distancia
-        lista_similaridade.append([qt_palavras1, percent_similaridade])
+
+        # Exibição da frase do texto2 que possui maior similaridade com o texto1
         print('Frase com maior similaridade:')
         print(lista2[posicao_j])
-        print(f'Quantidade de palavras da frase {i + 1}: {qt_palavras1}')
-        print(f'Quantidade de palavras da frase {posicao_j + 1}: {qt_palavras2}')
+
+        # Exibição da menor distância de Levenshtein entre as duas frases do texto1 e texto2
         print('Distância Mínima: ', d_max)
+
+        # Exibição do percentual de similaridade entre as duas frases
         print('Percentual de similaridade: ', percent_similaridade)
         print('')
 
+        # Os valores qt_palavras1 e percent_similaridade são armazenados na lista de similaridades
+        lista_similaridade.append([qt_palavras1, percent_similaridade])
+
+    # Calcula-se a média ponderada dos valores armazenados na lista de similaridades:
+    # Para cada frase do texto1, temos armazenados (qt_palavras1 e percent_similaridade)
+    # Percorremos a lista e calculamos a média ponderada destes valores para obter a similaridade total entre os textos
     peso = 0
     soma = 0
     for i in range(0, len(lista_similaridade)):
         peso = peso + lista_similaridade[i][0]
         soma = soma + (lista_similaridade[i][0] * lista_similaridade[i][1])
-    media_ponderada = soma / peso
+    similaridade = soma / peso
     print('')
+
+    # Exibe a lista de similaridades
     print('Lista de similaridades: ', lista_similaridade)
-    print('Similaridade total entre os textos: ', media_ponderada)
+
+    # Exibe a similaridade total entre os texto1 e texto2
+    print('Similaridade total entre os textos: ', similaridade)
 
 
 compara_textos(string1, string2)
